@@ -1,8 +1,8 @@
 import os
 import numpy as np
 import pandas as pd
-from generate_data import generate_synthetic_data
-
+from datasets.generate_data import generate_synthetic_data
+from utils.plot_iot_data import plot_iot_data
 
 def build_multiuser_datasets(
     train_users=80,
@@ -11,7 +11,7 @@ def build_multiuser_datasets(
     days=3,
     freq="5min",
     seed=123,
-    output_dir="outputs"
+    output_dir="datasets/data"
 ):
     np.random.seed(seed)
 
@@ -44,7 +44,7 @@ def build_multiuser_datasets(
 
         # Add user_id column
         df["user_id"] = user_id
-
+        # plot_iot_data(df, user_id=user_id, figsize=(15, 12), save_path="plot.png")
         # Save per-user
         filepath = os.path.join(split_dir, f"user_{user_id}.csv")
         df.to_csv(filepath, index=False)

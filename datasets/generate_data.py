@@ -122,15 +122,16 @@ def generate_synthetic_data(
         "anomaly_class": class_labels  # 0 = normal, 1–5 anomaly
     })
 
-    os.makedirs(output_dir, exist_ok=True)
-    filepath = os.path.join(output_dir, "synthetic_iot_data.csv")
-    df.to_csv(filepath, index=False)
+    # os.makedirs(output_dir, exist_ok=True)
+    # filepath = os.path.join(output_dir, "synthetic_iot_data.csv")
+    # df.to_csv(filepath, index=False)
 
     return df, anomalies
 
 
 if __name__ == "__main__":
     df, anomalies = generate_synthetic_data()
+    
     print("Generated dataset:", df.shape)
     print("\nInjected anomalies (priority applied):")
     for ts, desc in anomalies:
