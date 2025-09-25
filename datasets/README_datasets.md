@@ -8,7 +8,7 @@ The synthetic IoT dataset is generated to simulate real-world smart home environ
 
 The data generation script produces the dataset and can optionally save the data to disk in CSV format. Here's the general folder structure:
 
-
+```
 datasets/
 │
 ├── data/
