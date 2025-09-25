@@ -2,62 +2,124 @@
 
 ```text
 iot-anomaly-poc/
-├─ README.md
-├─ requirements.txt
-├─ generate_data.py
-├─ detect_anomalies.py
-└─ outputs/           # Stores generated datasets, logs, anomaly reports, plots
+├── README.md
+├── __pycache__
+│   ├── generate_data.cpython-310.pyc
+│   └── utils.cpython-310.pyc
+├── build_multiuser_datasets.py
+├── datasets
+│   ├── README_datasets.md
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-310.pyc
+│   │   ├── anomaly_dataset.cpython-310.pyc
+│   │   └── generate_data.cpython-310.pyc
+│   ├── anomaly_dataset.py
+│   ├── data
+│   │   ├── train
+│   │   ├── train_all.csv
+│   │   ├── v1
+│   │   │   ├── train
+│   │   │   ├── train_all.csv
+│   │   │   ├── val
+│   │   │   └── val_all.csv
+│   │   ├── val
+│   │   └── val_all.csv
+│   └── generate_data.py
+├── main.py
+├── models
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-310.pyc
+│   │   └── lstm_basic.cpython-310.pyc
+│   └── lstm_basic.py
+├── plot_datasetv2.png
+├── requirements.txt
+└── utils
+    ├── __pycache__
+    │   └── plot_iot_data.cpython-310.pyc
+    └── plot_iot_data.py
 
 ## Overview
 This repository contains a complete proof-of-concept for anomaly detection on multi-sensor smart-home time-series data. It simulates sensors, injects anomalies, and runs a lightweight detection pipeline that uses both interpretable rules and an unsupervised multivariate model.
 
-## Sensors Simulated
+# IoT Anomaly Detection POC
 
-- **Living room temperature (°C)**  
-  Normal daily cycle: ~20–24°C with small noise.  
-  *Anomaly*: sudden drops to simulate heating failure.
+## Iter 1 - Sensors: Baic dataset with anomalies but no drift simulation
 
-- **Bathroom humidity (%)**  
-  Baseline ~45%. Spikes during shower times (7–8am, 7–8pm).  
-  *Anomaly*: sudden spikes outside shower hours.
+## Iter 2 - Sensors
+- **Temperature (°C, Living Room)**  
+  - Baseline 21 °C ± daily cycle, with slow drift (+0.05 °C/week).  
+  - Anomalies: sensor failure (constant/frozen values).  
 
-- **Fridge power usage (Watts)**  
-  Normal ~150W with small fluctuations.  
-  *Anomaly*: power failure (flatlined at 0W).
+- **Humidity (%RH, Bathroom)**  
+  - Baseline 45 %RH, spikes to 70–90 % during showers.  
+  - Drift: +0.1 %RH/week.  
+  - Anomalies: spikes outside shower schedule.  
 
-- **Hallway motion (binary)**  
-  More likely during day hours (7am–11pm).  
+- **Fridge Power (W)**  
+  - Baseline ~150 W, with compressor cycling ±10 W.  
+  - Anomalies: power failure (drop to 0 W).  
 
-- **Front door (binary)**  
-  Typically opened around 8am (leaving) and 6pm (returning).  
-  *Anomaly*: unexpected night-time door opening.
+- **Front Door (binary)**  
+  - 0 = closed, 1 = open.  
+  - Anomalies: opening during 00:00–05:00 (nighttime).  
 
-- **Fire alarm (binary)**  
-  Normally off.  
-  *Anomaly*: triggered unexpectedly (critical event).
+- **Fire Alarm (binary)**  
+  - 0 = off, 1 = alarm triggered.  
+  - Overrides all anomalies.  
 
-## Anomalies Injected
+## Labels
+Each timestamp has a label:  
+- 0 → Normal  
+- 1 → Temperature anomaly  
+- 2 → Humidity anomaly  
+- 3 → Fridge anomaly  
+- 4 → Door anomaly  
+- 5 → Fire alarm (highest priority)  
 
-1. **Front door opened at night** – suspicious behavior between 1–3am.  
-2. **Fridge power failure** – fridge power flatlines at `0W` for ~2 hours.  
-3. **Unexpected humidity spike** – abnormal rise outside normal shower times.  
-4. **Fire alarm triggered** – safety-critical anomaly lasting ~15 minutes.  
-5. **Temperature drop** – simulated heating failure with a sudden 5°C drop.
+## Dataset Organization
+- `train_users/` → 80 users, hourly data over 6 months.  
+- `val_users/` → 20 users.  
+- `train_all.csv`, `val_all.csv` → concatenated datasets.  
 
-## Dataset
+## Limitations
+- Synthetic dataset: not based on real hardware logs.  
+- Drift patterns are modeled linearly, while real drift can be nonlinear or environment-dependent.  
+- Event frequencies are approximated; actual user behavior varies.  
+- Rare anomalies (like fire alarms) are injected more frequently than real-world rates for training utility.  
 
-- Frequency: **5-minute samples**  
-- Duration: configurable (default = 3 days)  
-- Output: `outputs/data/synthetic_iot_data.csv`  
+Weather Seasonality - in addition to sensor drift:
 
-Each row contains:  
+January (cold + dry): Temperature −5 °C, Humidity −10% RH.
 
-| timestamp           | temperature_c | humidity_pct | fridge_power_w | front_door_open | fire_alarm |
-|---------------------|---------------|--------------|----------------|-----------------|------------|
-| 2025-01-01 00:00:00 | 21.3          | 45.2         | 150.1          | 0               | 0          |
+April (hot + humid): Temperature +5 °C, Humidity +10% RH.
+
+February–March: Linearly interpolated between these extremes.
+
+Other months remain neutral for this POC.
+
+## Next Steps
+- Train anomaly classifiers (LSTM baseline included).  
+- Explore domain adaptation for real IoT datasets.  
+
+
 
 ## Usage
 
 Generate synthetic data:
 ```bash
 python generate_data.py
+
+dataset version 2 randomised the duration and keeping it to one event per catastropy
+also randomised the heat and humidity anomaly levels
+
+assumption is that there is a priority 5>4>3>2>1
+take 2hr - 1 week to repair aircon heater
+
+Future:
+increase number of events
+softmax to predict soft probabilities to detect overlapping events rather than hard prioritization
+
+change plot x-axis in terms of number of hours to observe aircon failure duration
+

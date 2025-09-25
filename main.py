@@ -62,8 +62,8 @@ def train_model(train_df, val_df, window_size=12, batch_size=64, num_epochs=20, 
 
 if __name__ == "__main__":
     # Load data
-    train_df = pd.read_csv("datasets/train_all.csv", parse_dates=["timestamp"])
-    val_df = pd.read_csv("datasets/val_all.csv", parse_dates=["timestamp"])
+    train_df = pd.read_csv("datasets/data/train_all.csv", parse_dates=["timestamp"])
+    val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
 
     # Train model
     model = train_model(train_df, val_df)
