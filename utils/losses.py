@@ -22,3 +22,19 @@ class FocalLoss(nn.Module):
         pt = torch.exp(-ce_loss)
         focal_loss = ((1 - pt) ** self.gamma) * ce_loss
         return focal_loss.mean()
+    
+def my_loss(config = None, device='cpu'):
+    if config["loss_type"] == "cross_entropy":
+        criterion = nn.CrossEntropyLoss()
+    elif config["loss_type"] == "weighted_ce":
+        weights = torch.tensor(config["class_weights"]).float().to(device)
+        criterion = nn.CrossEntropyLoss(weight=weights)
+    elif config["loss_type"] == "focal":
+        from utils.losses import FocalLoss
+        weights = None
+        if config.get("class_weights") is not None:
+            weights = torch.tensor(config["class_weights"]).float().to(device)
+        criterion = FocalLoss(weight=weights, gamma=2)
+    else:
+        raise ValueError(f"Unknown loss type: {config['loss_type']}")
+    return criterion
