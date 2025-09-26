@@ -17,11 +17,9 @@ def train_model(train_df, val_df, config, log=True):
     run_name = config["model_type"] + "_" + f"run_{int(time.time())}"
     if log:
         mlflow.set_experiment("IoT_Anomaly_Models")
-        mlflow.set_tracking_uri("http://127.0.0.1/:5000")
 
         with mlflow.start_run(run_name = run_name):
             mlflow.log_params(dict(config))
-
 
             # Dataset
             train_dataset = AnomalyDataset(train_df, config["window_size"])
@@ -45,6 +43,9 @@ def train_model(train_df, val_df, config, log=True):
             best_val_loss = float("inf")
             epochs_without_improvement = 0
             best_model_state_dict = None
+            best_all_labels = None
+            best_all_preds = None
+            best_all_probs = None
 
             for epoch in range(config["epochs"]):
                 # ---- Training ----
@@ -104,6 +105,9 @@ def train_model(train_df, val_df, config, log=True):
                     best_val_loss = val_loss
                     epochs_without_improvement = 0
                     best_model_state_dict = model.state_dict()
+                    best_all_labels = all_labels
+                    best_all_preds = all_preds
+                    best_all_probs = all_probs
                 else:
                     epochs_without_improvement += 1
                     if epochs_without_improvement >= config['patience']:
@@ -121,9 +125,9 @@ def train_model(train_df, val_df, config, log=True):
             torch.save(model.state_dict(), model_path)
 
             if log:
-                log_confusion_matrix(all_labels, all_preds,
+                log_confusion_matrix(best_all_labels, best_all_preds,
                      class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], normalized=True)
-                log_pr_curves(all_labels, all_probs, class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], artifact_name="pr_curves.png")
+                log_pr_curves(best_all_labels, best_all_probs, class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], artifact_name="pr_curves.png")
 
                 mlflow.log_artifact(model_path)
 
