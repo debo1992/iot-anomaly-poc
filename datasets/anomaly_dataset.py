@@ -31,3 +31,14 @@ class AnomalyDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.X[idx], self.y[idx]
+
+
+from torch.utils.data import DataLoader, WeightedRandomSampler
+
+def make_balanced_loader(dataset, batch_size):
+    labels = [y for _, y in dataset]
+    class_counts = torch.bincount(torch.tensor(labels))
+    class_weights = 1.0 / class_counts.float()
+    sample_weights = [class_weights[label] for label in labels]
+    sampler = WeightedRandomSampler(sample_weights, num_samples=len(sample_weights), replacement=True)
+    return DataLoader(dataset, batch_size=batch_size, sampler=sampler)
