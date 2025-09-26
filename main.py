@@ -17,6 +17,8 @@ def train_model(train_df, val_df, config, log=True):
     run_name = config["model_type"] + "_" + f"run_{int(time.time())}"
     if log:
         mlflow.set_experiment("IoT_Anomaly_Models")
+        mlflow.set_tracking_uri("http://127.0.0.1/:5000")
+
         with mlflow.start_run(run_name = run_name):
             mlflow.log_params(dict(config))
 
