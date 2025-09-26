@@ -3,7 +3,7 @@ import torch
 import mlflow
 from sklearn.metrics import precision_recall_fscore_support, classification_report
 
-def compute_classwise_metrics(all_labels, all_preds, ignore_class=0, verbose=True, log_mlflow=False, step=None):
+def compute_classwise_metrics(all_labels, all_preds, ignore_class=0, verbose=True, log_mlflow=True, step=None):
     """
     Compute precision, recall, and F1 per class (optionally excluding class 0).
     Optionally log metrics to MLflow.
