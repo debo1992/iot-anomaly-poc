@@ -35,7 +35,7 @@ iot-anomaly-poc/
 ├── outputs/               # Saved models
 ├── requirements.txt
 └── README.md
-
+```
 
 ## Overview
 This repository contains a complete proof-of-concept for anomaly detection on multi-sensor smart-home time-series data. It simulates sensors, injects anomalies, and runs a lightweight detection pipeline that uses both interpretable rules and an unsupervised multivariate model.
@@ -128,6 +128,84 @@ Implemented baselines:
 - ✅ **Quantization & ONNX conversion**  
 - ✅ **Drift monitoring**  
 - 🔜 **Deploy REST API** for smart home integration  
-- 🔜 **Pilot with real IoT data**  
+- 🔜 **Pilot with real IoT data**
+
+## 🚀 Usage
+
+### 🧱 Setup
+
+```bash
+# (1) Create and activate a virtual environment (optional)
+python3 -m venv venv_name
+source venv_name/bin/activate  
+
+# (2) Install required packages
+pip install -r requirements.txt
+```
+
+### 📦 Build Dataset
+
+Before training, build the dataset:
+
+```text
+python3 main.py --build-data
+```
+
+### Training Default config:
+```
+python3 main.py
+```
+
+This will train all supported models using built-in default parameters. The options for available models are:
+
+- DilatedCNN
+
+- CNN_DILATION
+
+- LSTM
+
+- CNN
+
+- TRANSFORMER
+
+- TCN
+
+
+To run the model with the stored config
+```
+python3 main.py --config configs/main_train_config.json
+```
+If you want to override some configs, modify the example below:
+```
+python3 main.py --config configs/train_config.json --epochs 5 --model_type LSTM
+```
+
+```
+| Argument            | Type  | Default     | Description                                 |
+| ------------------- | ----- | ----------- | ------------------------------------------- |
+| `--build-data`      | flag  | off         | Build the dataset from scratch              |
+| `--config`          | str   | None        | Path to a JSON config file                  |
+| `--model_type`      | str   | LSTM        | Model to train (`LSTM`, `CNN`, `TCN`, etc.) |
+| `--epochs`          | int   | 10          | Number of training epochs                   |
+| `--batch_size`      | int   | 64          | Batch size                                  |
+| `--lr`              | float | 0.001       | Learning rate                               |
+| `--patience`        | int   | 5           | Early stopping patience                     |
+| `--window_size`     | int   | 32          | Time-series window size                     |
+| `--loss_type`       | str   | weighted_ce | Type of loss function (`weighted_ce`, etc.) |
+| `--balanced_loader` | bool  | False       | Use class-balanced data loading             |
+| `--no-log`          | flag  | off         | Disable MLflow logging (dont use right now) |
+```
+
+### Quantize Model
+Create the quantized model with PQT based on model type. Eport the model to onnx and save models.
+```bash
+python3 quantize_model.py
+```
+
+### Benchmark tests
+```
+python3 benchmark_compare.py
+```
+
 
 
