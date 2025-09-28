@@ -2,18 +2,11 @@
 
 📌 Overview
 
-This repository contains a full anomaly detection pipeline for smart homes. It simulates:
-- Realistic multi-sensor data with injects anomalies: Refer [Sensor Signals - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#sensor-signals]
-- Trains multiple deep learning architectures: Refer [Justification of Anomaly Detection Models - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#sensor-signals]
-  - 🧠 **LSTM** — sequential modeling, baseline  
-  - ⚡ **CNN** — 1D convolution with dilations for long context  
-  - ⏱️ **TCN** — temporal convolutional network with residuals  
-  - 🎯 **Transformer** — attention-based sequence encoder  
-- Prepares models for deployment on edge devices: Refer [Deployment Prep & Productionizing the System - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#sensor-signals]
+This repository contains a full anomaly detection pipeline for smart homes. It simulates realistic multi-sensor data, injects anomalies, trains multiple deep learning architectures, and prepares them for deployment on edge devices.
+
+The goal: move beyond brittle threshold rules and deliver adaptive, learning-based monitoring for safety, efficiency, and security.
 
 
-
-## Repo Stucture
 ```text
 iot-anomaly-poc/
 ├── main.py                 # Training pipeline (multi-model)
@@ -44,7 +37,14 @@ iot-anomaly-poc/
 └── README.md
 ```
 
-## Sensor Signals
+## Overview
+This repository contains a complete proof-of-concept for anomaly detection on multi-sensor smart-home time-series data. It simulates sensors, injects anomalies, and runs a lightweight detection pipeline that uses both interpretable rules and an unsupervised multivariate model.
+
+# IoT Anomaly Detection POC
+
+## Iter 1 - Sensors: Baic dataset with anomalies but no drift simulation
+
+## Iter 2 - Sensors
 - **Temperature (°C, Living Room)**  
   - Baseline 21 °C ± daily cycle, with slow drift (+0.05 °C/week).  
   - Anomalies: sensor failure (constant/frozen values).  
@@ -75,6 +75,10 @@ Each timestamp has a label:
 - 4 → Door anomaly  
 - 5 → Fire alarm (highest priority)  
 
+## Dataset Organization
+- `train_users/` → 80 users, hourly data over 6 months.  
+- `val_users/` → 20 users.  
+- `train_all.csv`, `val_all.csv` → concatenated datasets.  
 
 ## Limitations
 - Synthetic dataset: not based on real hardware logs.  
@@ -89,27 +93,16 @@ Each timestamp has a label:
 
 Includes **seasonality** (winter/summer drift) and **random anomaly durations** (2 hours – 1 week) for realism.  
 
-
-
----
-## Justification of Anomaly Detection Models
- I selected four deep learning architectures—LSTM, CNN, TCN, and Transformer—each offering distinct strengths and trade-offs. My goal was to balance model accuracy, temporal pattern learning, and efficiency for edge deployment.
-
-| Model           | Accuracy on Long Sequences | Inference Speed  | Model Size | Suitability for Edge Deployment                  |
-| --------------- | -------------------------- | ---------------- | ---------- | ------------------------------------------------ |
-| **LSTM**        | High                       | Slow             | Large      | Baseline, less ideal due to sequential compute   |
-| **CNN**         | Moderate to High           | Fast             | Small      | Excellent balance, highly suitable for edge      |
-| **TCN**         | High                       | Fast             | Medium     | Strong edge candidate, balances depth & speed    |
-| **Transformer** | Very High                  | Moderate to Slow | Large      | Powerful but heavy, better for cloud or gateways |
-
-I initially implemented an LSTM baseline model, along with other baseline models using CNN and Transformer architectures. Among these, the LSTM outperformed the others in terms of accuracy. However, since CNNs are generally more edge-device friendly due to their efficiency and lower computational requirements, I decided to focus on improving the CNN model.
-
-To do this, I studied the data patterns closely and made targeted adjustments — specifically, I tweaked the number of CNN layers and optimized the window size of input data the CNN could process. These modifications allowed the CNN to capture relevant temporal features more effectively, ultimately enabling it to outperform the LSTM model.
-
-Following this, I quantized the CNN model. Quantization was especially suitable here because it could be applied easily to the entire CNN architecture, unlike the LSTM, where only the linear layers could be quantized effectively. This made the CNN model not only more efficient but also better suited for deployment within the tight time constraints of the project. 
-
 ---
 
+## 🤖 Models
+Implemented baselines:
+- 🧠 **LSTM** — sequential modeling, baseline  
+- ⚡ **CNN** — 1D convolution with dilations for long context  
+- ⏱️ **TCN** — temporal convolutional network with residuals  
+- 🎯 **Transformer** — attention-based sequence encoder  
+
+---
 
 ## 🧪 Training Pipeline
 - 🎲 **Weighted sampling** for class imbalance  
@@ -125,19 +118,7 @@ Following this, I quantized the CNN model. Quantization was especially suitable 
 - 🔄 **ONNX export** for cross-platform inference  
 - ⚖️ **Model size benchmarking** (original vs quantized vs ONNX)  
 - 📡 **Drift monitoring** for household behavior changes  
-- 🐳 **Docker-ready packaging** 
-
-## Productionizing the System
-
-I’ve already developed quantization and benchmarking scripts, which streamline optimizing the CNN model for efficient deployment on edge devices. This makes real-time, low-latency inference feasible directly on-device.
-
-For serving the model, tools like TensorFlow Lite or ONNX Runtime are ideal for running quantized models efficiently on edge hardware. If cloud-based inference is preferred, frameworks like TensorFlow Serving or TorchServe can handle scalable real-time prediction APIs.
-
-To monitor data drift and model performance, I implemented a data drift monitoring system. For this, tools like Evidently AI or WhyLabs provide out-of-the-box capabilities for drift detection and metric tracking. Additionally, logging infrastructure can be built with Prometheus and visualized via Grafana dashboards for real-time alerts on model metrics and system health.
-
-For retraining, a robust MLOps pipeline can be built using platforms such as Kubeflow, MLflow, or AWS SageMaker Pipelines. These tools help automate data ingestion, model retraining, validation, and deployment workflows. Retraining can be scheduled regularly or triggered by drift detection alerts to ensure the model adapts to new data distributions.
-
-Together, these tools create an end-to-end system that supports efficient, scalable serving, continuous monitoring, and seamless retraining to maintain model accuracy and reliability in production.
+- 🐳 **Docker-ready packaging**  
 
 ---
 
@@ -149,9 +130,9 @@ Together, these tools create an end-to-end system that supports efficient, scala
 - 🔜 **Deploy REST API** for smart home integration  
 - 🔜 **Pilot with real IoT data**
 
-## 🚀 USAGE
+## 🚀 Usage
 
-### 🧱 Instructions for Setting Up Environment (Setup)
+### 🧱 Setup
 
 ```bash
 # (1) Create and activate a virtual environment (optional)
@@ -174,6 +155,20 @@ python3 main.py --build-data
 ```
 python3 main.py
 ```
+
+This will train all supported models using built-in default parameters. The options for available models are:
+
+- DilatedCNN
+
+- CNN_DILATION
+
+- LSTM
+
+- CNN
+
+- TRANSFORMER
+
+- TCN
 
 
 To run the model with the stored config
@@ -209,7 +204,7 @@ python3 quantize_model.py
 
 ### Benchmark tests
 ```
-python3 test/benchmark_compare.py
+python3 benchmark_compare.py
 ```
 
 
