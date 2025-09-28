@@ -5,12 +5,16 @@ import time
 import mlflow
 
 import torch
-
+from datasets.anomaly_dataset import load_dataset
 from torch.utils.data import DataLoader
-from datasets.anomaly_dataset import AnomalyDataset, make_balanced_loader
-from models.initialize_model import my_model, my_loss
+from models.initialize_model import my_model
+from tests.load_eval_model import load_model_from_mlflow
+from utils.losses import my_loss
 from utils.evaluation_metrics import compute_classwise_metrics
 from utils.logging import log_loss_accuracy, log_confusion_matrix, log_pr_curves
+from utils.class_weight import get_class_weights
+
+
 
 
 def train_model(train_df, val_df, config, log=True):
@@ -22,25 +26,17 @@ def train_model(train_df, val_df, config, log=True):
             mlflow.log_params(dict(config))
 
             # Dataset
-            train_dataset = AnomalyDataset(train_df, config["window_size"])
-            val_dataset = AnomalyDataset(val_df, config["window_size"])
-
-            # ✅ Use balanced sampler for training
-            if config.get("balanced_loader", False):
-                train_loader = make_balanced_loader(train_dataset, batch_size=config["batch_size"])
-            else:
-                train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
-
-            val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
+            train_dataset, _, train_loader, val_loader = load_dataset(config, train_df, val_df)
 
             # Model
-            model = my_model(config)
-            criterion = my_loss(config)        
-            optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            model = my_model(config, input_dim=train_dataset.X.shape[2])
+            criterion = my_loss(config, device=device)      
+            optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])
             model.to(device)
 
             best_val_loss = float("inf")
+            best_val_f1 = 0.0
             epochs_without_improvement = 0
             best_model_state_dict = None
             best_all_labels = None
@@ -88,7 +84,7 @@ def train_model(train_df, val_df, config, log=True):
                 val_acc = 100 * val_correct / val_total
 
                 # Compute per-class precision/recall/f1
-                compute_classwise_metrics(
+                results = compute_classwise_metrics(
                     all_labels, all_preds, ignore_class=0,
                     verbose=True, log_mlflow=True, step=epoch
                 )
@@ -101,7 +97,7 @@ def train_model(train_df, val_df, config, log=True):
                     f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
                 # ---- Early Stopping ----
-                if val_loss < best_val_loss:
+                if results["macro_f1_excl_normal"] > best_val_f1:
                     best_val_loss = val_loss
                     epochs_without_improvement = 0
                     best_model_state_dict = model.state_dict()
@@ -128,9 +124,7 @@ def train_model(train_df, val_df, config, log=True):
                 log_confusion_matrix(best_all_labels, best_all_preds,
                      class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], normalized=True)
                 log_pr_curves(best_all_labels, best_all_probs, class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], artifact_name="pr_curves.png")
-
                 mlflow.log_artifact(model_path)
-
     return model
 
 
@@ -138,18 +132,22 @@ if __name__ == "__main__":
     # Load data
     train_df = pd.read_csv("datasets/data/train_all.csv", parse_dates=["timestamp"])
     val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
+    train_labels = train_df['anomaly_class'].values  # adjust column name
+    class_weights, classes = get_class_weights(train_labels)
 
-    for model in ["LSTM", "CNN", "TRANSFORMER", "TCN"]:
+# for model in ["DilatedCNN","CNN_DILATION","LSTM", "CNN", "TRANSFORMER", "TCN"]:
+    for model in [ "CNN"]:
         config = {
                 "model_type": model,
-                "window_size": 12,
+                "window_size": 32,
                 "batch_size": 64,
                 "epochs": 60,
                 "lr": 1e-3,
-                "patience": 7,
-                "balanced_loader": True,
-                "loss_type": "cross_entropy",  # could be "focal", "weighted_ce", etc.
-                "class_weights": None           # optional for weighted CE / focal
+                "patience": 17,
+                "balanced_loader": False,
+                "loss_type": "weighted_ce",  # could be "focal", "weighted_ce", etc.
+                "class_weights": class_weights           # optional for weighted CE / focal
             }
 
         model = train_model(train_df, val_df, config, log=True)
+32

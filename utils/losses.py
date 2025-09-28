@@ -12,9 +12,9 @@ def get_weighted_ce(class_counts):
 
 
 class FocalLoss(nn.Module):
-    def __init__(self, alpha=None, gamma=2.0):
+    def __init__(self, weight=None, gamma=2.0):
         super(FocalLoss, self).__init__()
-        self.alpha = alpha
+        self.alpha = weight
         self.gamma = gamma
 
     def forward(self, inputs, targets):
