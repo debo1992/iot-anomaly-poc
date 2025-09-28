@@ -3,8 +3,8 @@
 📌 Overview
 
 This repository contains a full anomaly detection pipeline for smart homes. It simulates:
-- Realistic multi-sensor data with injects anomalies: Refer [Iter 2 - Sensors-https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#iter-2---sensors]
-- Trains multiple deep learning architectures: Refer **Justification of Anomaly Detection Models**
+- Realistic multi-sensor data with injects anomalies: Refer [Sensors - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#iter-2---sensors]
+- Trains multiple deep learning architectures: Refer [Justification of Anomaly Detection Models - ]
   - 🧠 **LSTM** — sequential modeling, baseline  
   - ⚡ **CNN** — 1D convolution with dilations for long context  
   - ⏱️ **TCN** — temporal convolutional network with residuals  
@@ -44,7 +44,7 @@ iot-anomaly-poc/
 └── README.md
 ```
 
-## Iter 2 - Sensors
+## Sensor Signals
 - **Temperature (°C, Living Room)**  
   - Baseline 21 °C ± daily cycle, with slow drift (+0.05 °C/week).  
   - Anomalies: sensor failure (constant/frozen values).  
