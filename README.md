@@ -1,44 +1,41 @@
 # IoT Smart Home — Anomaly Detection Proof-of-Concept
 
+📌 Overview
+
+This repository contains a full anomaly detection pipeline for smart homes. It simulates realistic multi-sensor data, injects anomalies, trains multiple deep learning architectures, and prepares them for deployment on edge devices.
+
+The goal: move beyond brittle threshold rules and deliver adaptive, learning-based monitoring for safety, efficiency, and security.
+
+
 ```text
 iot-anomaly-poc/
-├── README.md
-├── __pycache__
-│   ├── generate_data.cpython-310.pyc
-│   └── utils.cpython-310.pyc
-├── build_multiuser_datasets.py
-├── datasets
-│   ├── README_datasets.md
-│   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-310.pyc
-│   │   ├── anomaly_dataset.cpython-310.pyc
-│   │   └── generate_data.cpython-310.pyc
-│   ├── anomaly_dataset.py
-│   ├── data
-│   │   ├── train
-│   │   ├── train_all.csv
-│   │   ├── v1
-│   │   │   ├── train
-│   │   │   ├── train_all.csv
-│   │   │   ├── val
-│   │   │   └── val_all.csv
-│   │   ├── val
-│   │   └── val_all.csv
-│   └── generate_data.py
-├── main.py
-├── models
-│   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-310.pyc
-│   │   └── lstm_basic.cpython-310.pyc
-│   └── lstm_basic.py
-├── plot_datasetv2.png
+├── main.py                 # Training pipeline (multi-model)
+├── build_multiuser_datasets.py  # Generate multi-user datasets
+├── datasets/               # Synthetic IoT datasets + generator
+│   ├── anomaly_dataset.py  # Custom PyTorch dataset + sampler
+│   ├── generate_data.py    # Sensor simulation + anomaly injection
+│   ├── data/               # Train/val CSVs
+│   └── README_datasets.md
+├── models/                 # Baseline deep learning models
+│   ├── lstm_basic.py
+│   ├── cnn_basic.py
+│   ├── tcn_basic.py
+│   ├── transformer_basic.py
+│   └── initialize_model.py
+├── utils/                  # Training utilities
+│   ├── evaluation_metrics.py  # Confusion matrix, PR curves, F1
+│   ├── logging.py             # MLflow + W&B logging
+│   ├── class_weight.py        # Handle class imbalance
+│   └── losses.py              # Focal loss, weighted CE
+├── tests/                 # Post-training tools
+│   ├── load_eval_model.py     # Baseline model evaluation
+│   ├── quantize_model.py      # Dynamic & static quantization 
+│   ├── drift_monitor.py       # Data drift detection
+│   └── benchmark_compare.py   # Compare model sizes + ONNX
+├── outputs/               # Saved models
 ├── requirements.txt
-└── utils
-    ├── __pycache__
-    │   └── plot_iot_data.cpython-310.pyc
-    └── plot_iot_data.py
+└── README.md
+
 
 ## Overview
 This repository contains a complete proof-of-concept for anomaly detection on multi-sensor smart-home time-series data. It simulates sensors, injects anomalies, and runs a lightweight detection pipeline that uses both interpretable rules and an unsupervised multivariate model.
@@ -89,37 +86,48 @@ Each timestamp has a label:
 - Event frequencies are approximated; actual user behavior varies.  
 - Rare anomalies (like fire alarms) are injected more frequently than real-world rates for training utility.  
 
-Weather Seasonality - in addition to sensor drift:
+## 📊 Dataset Organization
+- **`train_users/`** → 80 simulated households (6 months)  
+- **`val_users/`** → 20 households  
+- **`train_all.csv`, `val_all.csv`** → aggregated datasets  
 
-January (cold + dry): Temperature −5 °C, Humidity −10% RH.
+Includes **seasonality** (winter/summer drift) and **random anomaly durations** (2 hours – 1 week) for realism.  
 
-April (hot + humid): Temperature +5 °C, Humidity +10% RH.
+---
 
-February–March: Linearly interpolated between these extremes.
+## 🤖 Models
+Implemented baselines:
+- 🧠 **LSTM** — sequential modeling, baseline  
+- ⚡ **CNN** — 1D convolution with dilations for long context  
+- ⏱️ **TCN** — temporal convolutional network with residuals  
+- 🎯 **Transformer** — attention-based sequence encoder  
 
-Other months remain neutral for this POC.
+---
 
-## Next Steps
-- Train anomaly classifiers (LSTM baseline included).  
-- Explore domain adaptation for real IoT datasets.  
+## 🧪 Training Pipeline
+- 🎲 **Weighted sampling** for class imbalance  
+- 📉 **Custom losses**: CrossEntropy, Focal Loss  
+- ⏳ **Early stopping** + best model checkpointing  
+- 📊 **Experiment tracking** via MLflow (confusion matrices & PR curves)  
+- 🟣 **W&B optional logging**  
 
+---
 
+## 📦 Deployment Prep
+- 📏 **Quantization** (PyTorch dynamic/static: CNN, TCN, LSTM)  
+- 🔄 **ONNX export** for cross-platform inference  
+- ⚖️ **Model size benchmarking** (original vs quantized vs ONNX)  
+- 📡 **Drift monitoring** for household behavior changes  
+- 🐳 **Docker-ready packaging**  
 
-## Usage
+---
 
-Generate synthetic data:
-```bash
-python generate_data.py
+## 🚀 Roadmap
+- ✅ **Synthetic dataset generation** + anomaly injection  
+- ✅ **Multi-model training & benchmarking**  
+- ✅ **Quantization & ONNX conversion**  
+- ✅ **Drift monitoring**  
+- 🔜 **Deploy REST API** for smart home integration  
+- 🔜 **Pilot with real IoT data**  
 
-dataset version 2 randomised the duration and keeping it to one event per catastropy
-also randomised the heat and humidity anomaly levels
-
-assumption is that there is a priority 5>4>3>2>1
-take 2hr - 1 week to repair aircon heater
-
-Future:
-increase number of events
-softmax to predict soft probabilities to detect overlapping events rather than hard prioritization
-
-change plot x-axis in terms of number of hours to observe aircon failure duration
 
