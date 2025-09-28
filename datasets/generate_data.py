@@ -1,9 +1,3 @@
-# datasets/generate_data.py
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from utils.plot_iot_data import plot_iot_data
-
 """
 File: generate_data.py
 Description:
@@ -17,7 +11,14 @@ Key Features:
 - Supports exporting generated data to CSV.
 - Includes utilities for visualizing the generated data.
 
+# datasets/generate_data.py
 """
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+from utils.plot_iot_data import plot_iot_data
+
+
 
 def seasonal_adjustments(timestamps):
     """

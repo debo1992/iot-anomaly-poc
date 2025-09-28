@@ -113,6 +113,7 @@ To do this, I studied the data patterns closely and made targeted adjustments â€
 
 Following this, I quantized the CNN model. Quantization was especially suitable here because it could be applied easily to the entire CNN architecture, unlike the LSTM, where only the linear layers could be quantized effectively. This made the CNN model not only more efficient but also better suited for deployment within the tight time constraints of the project. 
 
+**Find all models here and view the confusion mattrices in the folder mlruns/<run_id>/<model_name>/artifacts**
 ---
 
 
@@ -214,7 +215,7 @@ python3 quantize_model.py
 
 ### Benchmark tests
 ```
-python3 test/benchmark_compare.py
+python3 tests/benchmark_compare.py
 ```
 
 
