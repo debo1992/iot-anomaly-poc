@@ -82,7 +82,7 @@ Each timestamp has a label:
 - Event frequencies are approximated; actual user behavior varies.  
 - Rare anomalies (like fire alarms) are injected more frequently than real-world rates for training utility.  
 
-## 📊 Dataset Organization
+## 📊 Dataset Organization ( Refer datasets/README_datasets.md)
 - **`train_users/`** → 80 simulated households (6 months)  
 - **`val_users/`** → 20 households  
 - **`train_all.csv`, `val_all.csv`** → aggregated datasets  

@@ -37,8 +37,7 @@ iot-anomaly-poc/
 └── README.md
 ```
 
-## Overview
-This repository contains a complete proof-of-concept for anomaly detection on multi-sensor smart-home time-series data. It simulates sensors, injects anomalies, and runs a lightweight detection pipeline that uses both interpretable rules and an unsupervised multivariate model.
+
 
 # IoT Anomaly Detection POC
 
@@ -75,10 +74,6 @@ Each timestamp has a label:
 - 4 → Door anomaly  
 - 5 → Fire alarm (highest priority)  
 
-## Dataset Organization
-- `train_users/` → 80 users, hourly data over 6 months.  
-- `val_users/` → 20 users.  
-- `train_all.csv`, `val_all.csv` → concatenated datasets.  
 
 ## Limitations
 - Synthetic dataset: not based on real hardware logs.  
@@ -86,7 +81,7 @@ Each timestamp has a label:
 - Event frequencies are approximated; actual user behavior varies.  
 - Rare anomalies (like fire alarms) are injected more frequently than real-world rates for training utility.  
 
-## 📊 Dataset Organization
+## 📊 Dataset Organization ( Refer datasets/README_datasets.md)
 - **`train_users/`** → 80 simulated households (6 months)  
 - **`val_users/`** → 20 households  
 - **`train_all.csv`, `val_all.csv`** → aggregated datasets  
