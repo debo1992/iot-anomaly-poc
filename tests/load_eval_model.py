@@ -28,7 +28,7 @@ def load_model_from_mlflow(artifact_path="CNN_run_1758931464_model.pt"):
         if key in ["epochs", "batch_size", "num_classes", "hidden_dim", "window_size","patience"]:
             config[key] = int(config[key])
         
-    return config, model
+    return config, model, artifact_path
 
 
 

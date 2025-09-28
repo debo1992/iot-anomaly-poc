@@ -20,14 +20,14 @@ NUM_RUNS = 50  # number of inference runs for timing
 train_df = pd.read_csv("datasets/data/train_all.csv", parse_dates=["timestamp"])
 val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
 
-config, float_model = load_model_from_mlflow()  # original float model
+config, float_model, model_name = load_model_from_mlflow()  # original float model
 float_model.eval()
 
 # Load datasets and loader
 train_dataset, val_dataset, _, val_loader = load_dataset(config, train_df, val_df)
 
 # --- Quantized model (JIT) ---
-quant_model_path = "outputs/models/my_quantized_model_scripted.pt"
+quant_model_path = "outputs/models/"+model_name+"_quantized_scripted.pt"
 quant_model = torch.jit.load(quant_model_path)
 quant_model.eval()
 

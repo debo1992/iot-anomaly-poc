@@ -30,7 +30,7 @@ def my_loss(config = None, device='cpu'):
         weights = torch.tensor(config["class_weights"]).float().to(device)
         criterion = nn.CrossEntropyLoss(weight=weights)
     elif config["loss_type"] == "focal":
-        from utils.losses import FocalLoss
+        from models.losses import FocalLoss
         weights = None
         if config.get("class_weights") is not None:
             weights = torch.tensor(config["class_weights"]).float().to(device)

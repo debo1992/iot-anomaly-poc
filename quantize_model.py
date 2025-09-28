@@ -66,12 +66,13 @@ def save_quantized_model(quantized_model, config, example_input, path="outputs/m
 
     train_df = pd.read_csv("datasets/data/train_all.csv", parse_dates=["timestamp"])
     val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
-    config, model = load_model_from_mlflow()
+    config, model, model_name = load_model_from_mlflow()
     _, _, _, val_loader = load_dataset(config, train_df, val_df)
     labels, predicted_class, predicted_probabilities = prediction_model(model, val_loader)
     log_confusion_matrix(labels, predicted_class,
-                     class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], normalized=True)
-    log_pr_curves(labels, predicted_probabilities, class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], artifact_name="pr_curves.png")
+                     class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], normalized=True,
+                     artifact_name="cf_matrix_quantized.png")
+    log_pr_curves(labels, predicted_probabilities, class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"], artifact_name="pr_quantized.png")
 
     # ONNX
     torch.onnx.export(
@@ -88,7 +89,7 @@ if __name__ == "__main__":
     val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
 
     # Load best model + config from MLflow
-    config, model = load_model_from_mlflow()
+    config, model, model_name = load_model_from_mlflow()
     model.eval()
 
     # Datasets + loaders
@@ -98,10 +99,10 @@ if __name__ == "__main__":
     labels, predicted_class, predicted_probabilities = prediction_model(model, val_loader)
     log_confusion_matrix(labels, predicted_class,
                          class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"],
-                         normalized=True)
+                         normalized=True, artifact_name="cf_matrix_"+model_name+".png")
     log_pr_curves(labels, predicted_probabilities,
                   class_names=["Normal", "Temp", "Humid", "Fridge", "Door", "Fire"],
-                  artifact_name="pr_curves.png")
+                  artifact_name="pr_"+model_name+".png")
 
     # Quantization
     calib_loader = get_calibration_loader(train_dataset, frac=0.1, batch_size=64)
@@ -109,4 +110,4 @@ if __name__ == "__main__":
 
     # Save quantized versions
     example_input = torch.randn(1, config["window_size"], train_dataset.X.shape[2])
-    save_quantized_model(quantized_model, config, example_input, path="outputs/models/my_quantized_model.pt")
+    save_quantized_model(quantized_model, config, example_input, path="outputs/models/"+model_name+"_quantized.pt")
