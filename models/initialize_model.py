@@ -1,3 +1,17 @@
+"""
+Factory function to instantiate different anomaly detection models based on configuration.
+
+Supported model types:
+- LSTM: Recurrent LSTM-based classifier for sequential data.
+- CNN: Basic 1D CNN classifier.
+- CNN_DILATION: CNN with dilated convolutions.
+- DilatedCNN: Residual CNN with multiple dilated convolution blocks.
+- TRANSFORMER: Transformer-based sequence classifier.
+- TCN: Temporal Convolutional Network classifier.
+
+The function returns the appropriate PyTorch model instance with the given input dimension and optional number of classes.
+"""
+
 import torch
 import torch.nn as nn
 from models.lstm_basic import LSTMAnomalyClassifier

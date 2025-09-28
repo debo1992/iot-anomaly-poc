@@ -2,6 +2,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+"""
+This module defines three convolutional neural network architectures for 
+anomaly detection in time-series data.
+
+1. CNNAnomalyClassifier:
+   - Uses stacked 1D convolutions with increasing dilation rates to capture temporal patterns.
+   - Applies global average pooling and dropout before final classification.
+
+2. AnomalyCNNDilation:
+   - Combines standard and dilated convolutions with batch normalization.
+   - Uses adaptive average pooling and dropout before the final linear layer.
+
+3. DilatedCNN:
+   - Implements multiple residual blocks of dilated convolutions to capture long-range dependencies.
+   - Uses residual connections to improve gradient flow and adaptive pooling before classification.
+
+All models expect input tensors of shape (batch_size, sequence_length, input_dim) and output class logits.
+"""
+
 class CNNAnomalyClassifier(nn.Module):
     def __init__(self, input_dim=5, num_classes=6, hidden_dim=64, dropout=0.2):
         super(CNNAnomalyClassifier, self).__init__()

@@ -10,6 +10,11 @@ This repository contains a full anomaly detection pipeline for smart homes. It s
   - ⏱️ **TCN** — temporal convolutional network with residuals  
   - 🎯 **Transformer** — attention-based sequence encoder  
 - Prepares models for deployment on edge devices: Refer [Deployment Prep & Productionizing the System - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#sensor-signals]
+- Usage specifically for demo as requested [default args]:
+```bash
+python3 detect_anomalies.py
+```
+More information on congifs and parameters for running here with confusion matrix and PR curves here - https://github.com/debo1992/iot-anomaly-poc/blob/main/README.md#training-default-config.
 
 
 

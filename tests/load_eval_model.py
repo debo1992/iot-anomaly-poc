@@ -1,3 +1,16 @@
+"""
+Evaluation Script for Anomaly Detection Models
+
+- Loads a trained model checkpoint from MLflow artifact storage.
+- Prepares validation dataset and dataloader.
+- Runs model inference to get predicted classes and probabilities.
+- Generates and saves:
+  - Normalized confusion matrix heatmap.
+  - Precision-Recall curves for each class.
+- Uses sklearn and seaborn for metrics and visualization.
+- Designed for multi-class anomaly classification (default 6 classes).
+"""
+
 import pandas as pd
 import mlflow
 import numpy as np

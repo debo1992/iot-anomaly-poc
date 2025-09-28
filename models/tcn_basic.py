@@ -1,4 +1,23 @@
-# models/tcn_anomaly.py
+"""
+Temporal Convolutional Network (TCN) for Multiclass Time Series Anomaly Detection.
+
+This module implements a TCN-based classifier for time series data, adapted for
+multiclass anomaly detection. It includes:
+
+- `Chomp1d`: Trims padding added for dilation to maintain sequence length.
+- `TemporalBlock`: Basic TCN block with dilated causal convolutions, ReLU, dropout, and residual connections.
+- `TCN`: Stacks multiple TemporalBlocks with exponentially increasing dilation to capture long-term dependencies.
+- `TCNAnomalyClassifier`: Final classifier head that applies the TCN network and a linear layer for classification.
+
+Input shape: (batch_size, sequence_length, input_features)  
+Output shape: (batch_size, num_classes)
+
+Example:
+    model = TCNAnomalyClassifier(input_dim=5, num_classes=6)
+    x = torch.randn(8, 100, 5)
+    logits = model(x)  # shape: (8, 6)
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

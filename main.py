@@ -1,4 +1,46 @@
-# main.py
+"""
+main.py — Training Entry Point for IoT Anomaly Detection Models
+
+This script handles:
+- Config-driven training of deep learning models for multivariate time series anomaly classification
+- Optional MLflow experiment logging (metrics, artifacts, confusion matrix, PR curves)
+- Dataset building and class weight calculation for imbalanced classification
+- Early stopping and best model checkpointing
+- Command-line overrides for training hyperparameters and model settings
+
+Supported Models:
+- LSTM
+- CNN
+- CNN_DILATION
+- DilatedCNN
+- TCN
+- Transformer
+
+Usage:
+    python main.py --config configs/my_config.json
+    python main.py --model_type CNN --epochs 20 --log
+
+Arguments:
+    --config            Path to JSON file containing training configuration
+    --model_type        (Override) Model architecture to use
+    --epochs            (Override) Number of training epochs
+    --lr                (Override) Learning rate
+    --window_size       (Override) Sequence length
+    --patience          (Override) Early stopping patience
+    --loss_type         (Override) Loss function (e.g., 'cross_entropy', 'weighted_ce', 'focal')
+    --balanced_loader   Use balanced sampling during training
+    --log               Enable/disable MLflow logging (default: True)
+    --build-data        If set, rebuilds dataset using `build_multiuser_datasets()`
+
+Outputs:
+- Trained PyTorch model checkpoint (saved to `outputs/models/`)
+- MLflow run artifacts if logging is enabled
+
+Dependencies:
+- PyTorch, pandas, argparse, mlflow, scikit-learn
+- Local modules: models/, datasets/, utils/
+"""
+
 import os
 import pandas as pd
 import time

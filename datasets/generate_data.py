@@ -4,6 +4,21 @@ import pandas as pd
 from datetime import datetime, timedelta
 from utils.plot_iot_data import plot_iot_data
 
+"""
+File: generate_data.py
+Description:
+    This script contains functions and utilities for generating our projects sensor data of temperature,
+    humidity, fridge power, door opens and fire alarm thats injected with anomalies. This data is generated only for one user. 
+    This function is called by generate_multiple_users_data.py to generate data for multiple users.
+
+Key Features:
+- Generates synthetic datasets with configurable parameters.
+- Simulates both normal and anomalous data patterns for anomaly detection.
+- Supports exporting generated data to CSV.
+- Includes utilities for visualizing the generated data.
+
+"""
+
 def seasonal_adjustments(timestamps):
     """
     Vectorized seasonal adjustments (°C and %RH).

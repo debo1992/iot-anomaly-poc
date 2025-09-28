@@ -1,0 +1,15 @@
+artifact_uri: file:///home/debo/workspace/iot-anomaly-poc/mlruns/403589896195770437/58419d3b366b40ac8c8b7782d0245d89/artifacts
+deleted_time: 1758867965729
+end_time: null
+entry_point_name: ''
+experiment_id: '403589896195770437'
+lifecycle_stage: deleted
+run_id: 58419d3b366b40ac8c8b7782d0245d89
+run_name: defiant-cat-104
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758867539994
+status: 1
+tags: []
+user_id: debo

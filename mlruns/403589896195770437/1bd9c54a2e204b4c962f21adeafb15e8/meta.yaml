@@ -1,0 +1,15 @@
+artifact_uri: file:///home/debo/workspace/iot-anomaly-poc/mlruns/403589896195770437/1bd9c54a2e204b4c962f21adeafb15e8/artifacts
+deleted_time: 1758880291089
+end_time: 1758879654047
+entry_point_name: ''
+experiment_id: '403589896195770437'
+lifecycle_stage: deleted
+run_id: 1bd9c54a2e204b4c962f21adeafb15e8
+run_name: LSTM_run_1758879586
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758879586629
+status: 4
+tags: []
+user_id: debo

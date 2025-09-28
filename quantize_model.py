@@ -1,3 +1,21 @@
+"""
+File: quantize_model.py
+Description:
+    This script contains functions and utilities for quantizing machine learning models.
+    Quantization is the process of reducing the precision of the numbers used to represent
+    a model's parameters, which can improve performance and reduce memory usage, especially
+    for deployment on resource-constrained devices like IoT devices.
+
+Key Features:
+- Supports model weight quantization to lower precision (e.g., INT8).
+- Provides methods for post-training quantization and TODO: quantization-aware training.
+- Includes utilities for evaluating the performance of quantized models.
+
+Usage:
+- Import the script to apply quantization to a pre-trained model.
+- Use the provided functions to evaluate the trade-offs between model size, speed, and accuracy.
+
+"""
 import torch
 import torch.ao.quantization as tq
 from torch.ao.quantization.quantize_fx import prepare_fx, convert_fx

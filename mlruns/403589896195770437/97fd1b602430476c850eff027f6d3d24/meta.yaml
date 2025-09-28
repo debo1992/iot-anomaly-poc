@@ -1,0 +1,15 @@
+artifact_uri: file:///home/debo/workspace/iot-anomaly-poc/mlruns/403589896195770437/97fd1b602430476c850eff027f6d3d24/artifacts
+deleted_time: 1758868436552
+end_time: null
+entry_point_name: ''
+experiment_id: '403589896195770437'
+lifecycle_stage: deleted
+run_id: 97fd1b602430476c850eff027f6d3d24
+run_name: salty-skink-436
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758868132207
+status: 1
+tags: []
+user_id: debo

@@ -45,6 +45,10 @@ def make_balanced_loader(dataset, batch_size):
 
 
 def load_dataset(config=None, train_df=None, val_df=None):
+    
+    """The load_dataset function prepares training and validation datasets and their corresponding DataLoader objects. It applies feature engineering, selects relevant features to introduce lagged features, and creates AnomalyDataset instances. If specified in the configuration, it uses a balanced loader for training to address class imbalance.
+
+    """
     train_df = feature_engineer(train_df)
     val_df = feature_engineer(val_df)
     feature_cols = train_df.columns[2:10].tolist()

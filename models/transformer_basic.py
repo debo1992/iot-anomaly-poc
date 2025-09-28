@@ -1,4 +1,19 @@
-# models/transformer_anomaly.py
+"""
+Transformer-based Anomaly Classifier
+
+- Uses a learnable positional embedding and a Transformer encoder stack to model sequential data.
+- Projects input features into a d_model-dimensional embedding space.
+- Applies multi-head self-attention to capture temporal dependencies.
+- Uses the last timestep's output embedding for classification via a fully connected head.
+- Designed for multivariate time series anomaly classification with configurable depth and width.
+
+Inputs:
+- x: Tensor of shape (batch_size, sequence_length, input_dim)
+
+Outputs:
+- logits for num_classes (batch_size, num_classes)
+"""
+
 import torch
 import torch.nn as nn
 

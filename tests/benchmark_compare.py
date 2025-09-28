@@ -1,3 +1,32 @@
+"""
+Benchmark Script for Comparing Float, Quantized, and ONNX Model Inference
+
+This script benchmarks and compares the following aspects of a trained time series anomaly 
+detection model:
+- File sizes (float, quantized TorchScript, and ONNX versions)
+- Average inference latency per batch on CPU
+
+It loads:
+- A float PyTorch model from MLflow
+- A quantized TorchScript model from local storage
+- An optional ONNX version of the model (if ONNX Runtime is installed)
+
+The dataset is loaded using the same preprocessing pipeline as during training, and 
+multiple inference runs are performed to compute average runtime.
+
+Dependencies:
+- torch
+- onnxruntime (optional)
+- pandas
+- time
+- mlflow
+- local modules: datasets.anomaly_dataset, tests.load_eval_model
+
+Usage:
+- Make sure models are exported and paths are correctly set before running.
+- Adjust `NUM_RUNS` to control benchmark duration.
+"""
+
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -19,6 +48,7 @@ NUM_RUNS = 50  # number of inference runs for timing
 # --- Load dataset ---
 train_df = pd.read_csv("datasets/data/train_all.csv", parse_dates=["timestamp"])
 val_df = pd.read_csv("datasets/data/val_all.csv", parse_dates=["timestamp"])
+
 
 config, float_model, model_name = load_model_from_mlflow()  # original float model
 float_model.eval()

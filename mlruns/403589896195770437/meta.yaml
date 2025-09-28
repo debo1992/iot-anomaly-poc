@@ -1,0 +1,6 @@
+artifact_location: file:///home/debo/workspace/iot-anomaly-poc/mlruns/403589896195770437
+creation_time: 1758768215011
+experiment_id: '403589896195770437'
+last_update_time: 1758768215011
+lifecycle_stage: active
+name: IoT_Anomaly_Models

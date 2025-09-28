@@ -1,4 +1,12 @@
-# models/lstm_anomaly.py
+"""
+LSTMAnomalyClassifier:
+A multi-layer LSTM-based neural network for time-series anomaly classification.
+
+- Takes input sequences of shape (batch_size, seq_len, input_dim).
+- Processes sequences through stacked LSTM layers with dropout.
+- Uses the last LSTM output (final time step) for classification via a fully connected layer.
+- Outputs logits for multiple classes (default 6 classes).
+"""
 import torch.nn as nn
 
 class LSTMAnomalyClassifier(nn.Module):
